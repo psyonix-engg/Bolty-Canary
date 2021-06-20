@@ -32,7 +32,7 @@ module.exports.run = async (client, message, args) => {
 
     const reason = args.slice(1).join(" ");
 
-    if (reason === undefined) reason = "No reaosn was provided.";
+    if (!reason) reason = "No reason was provided.";
 
     if (member.bannable) {
       member.ban({ reason: reason, days: 0 });

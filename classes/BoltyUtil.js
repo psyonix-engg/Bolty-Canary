@@ -43,7 +43,7 @@ class BoltyUtil {
     info: "<:info:855396289798078465>",
     fun: "<a:fun:855398438547619860>",
     mod: "<:mod:855399096315019294>",
-    wrong_error: "❌",
+    wrong_error: "<:error:856125687567613973>",
     success: "<:success:855888059978743819>",
   };
 }
