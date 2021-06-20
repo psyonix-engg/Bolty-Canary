@@ -17,7 +17,7 @@ module.exports.run = async (client, message, args) => {
 
   let userToUnban = args[0];
 
-  let reason = args.slice(1).join(" ");
+  var reason = args[1];
 
   if (reason === undefined) reason = "No reason was provided.";
 
