@@ -54,7 +54,7 @@ module.exports.run = async (client, message, args) => {
       message.channel.send(
         BoltyMod.BoltyBanEmbed(message)
           .setAuthor(`Error`, `https://emoji.discord.st/emojis/Error.png`)
-          .setDescription(`**Member was not banned**.`)
+          .setDescription(`**Member was not unbanned**.`)
       );
 
     let usertoUnban = bans.find((usr) => usr.user.id == userToUnban);
