@@ -58,7 +58,7 @@ class BoltyMod {
         `${message.guild.name}`,
         message.guild.iconURL({ dynamic: true })
       )
-      .setColor("RED")
+      .setColor("GREEN")
       .setTimestamp(new Date());
   }
 

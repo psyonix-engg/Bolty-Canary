@@ -20,6 +20,13 @@ module.exports.run = async (client, message, args) => {
   const target = message.mentions.members.first();
   var reason = args.slice(2).join(" ");
 
+  if (!args[0]) {
+    BoltyMod.BoltyEmbed(client).addField(
+      `**Usage:**`,
+      `\`${client.config.prefix}temp-mute [user] [reason] (optional reason)\``
+    );
+  }
+
   if (target) {
     let muteRole = message.guild.roles.cache.find(
       (r) => r.name === "Muted (Bolty)"
@@ -28,41 +35,41 @@ module.exports.run = async (client, message, args) => {
     if (!muteRole) {
       BoltyMod.BoltyEmbed(client).setDescription(
         `${BoltyMod.BoltyEmotes.wrong_error} No muted role was found.\nRun the setup command using \`${client.config.prefix}setup\` to set up Bolty correctly.`
-      )
-      return
+      );
+      return;
     }
 
     let memberTarget = message.guild.members.cache.get(target.id);
 
-    if(!target) {
+    if (!target) {
       message.reply(
         BoltyMod.BoltyMuteEmbed(message).setDescription(
           `${BoltyMod.BoltyEmotes.wrong_error} Please specify a user to mute.`
         )
-      )
-      return
+      );
+      return;
     }
 
     if (!args[1]) {
       BoltyMod.BoltyEmbed(client).setDescription(
         `${BoltyMod.BoltyEmotes.wrong_error} Please specify a duration (1s, 1m, 1h, 1d...)`
-      )
-      return
+      );
+      return;
     }
 
-    if (!reason) reason = "No reason was provided."
+    if (!reason) reason = "No reason was provided.";
 
     memberTarget.roles.add(muteRole.id);
     message.channel.send(
       BoltyMod.BoltyMuteEmbed(message)
-      .setAuthor(
-        `${memberTarget.user.tag} was muted`,
-        `https://cdn.discordapp.com/emojis/801791545060884510.png?v=1`
-      )
-      .addField(`Muted By:`, `\`${message.author.tag}\``)
-      .addField("Duration:", `\`${args[1]}\``)
-      .addField(`Reason:`, `\`${reason}\``)
-      .setThumbnail(memberTarget.user.displayAvatarURL({ dynamic: true }))
+        .setAuthor(
+          `${memberTarget.user.tag} was muted`,
+          `https://cdn.discordapp.com/emojis/801791545060884510.png?v=1`
+        )
+        .addField(`Muted By:`, `\`${message.author.tag}\``)
+        .addField("Duration:", `\`${args[1]}\``)
+        .addField(`Reason:`, `\`${reason}\``)
+        .setThumbnail(memberTarget.user.displayAvatarURL({ dynamic: true }))
     );
 
     setTimeout(function () {
