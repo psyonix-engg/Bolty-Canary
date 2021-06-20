@@ -25,7 +25,7 @@ module.exports.run = async (client, message, args) => {
   if (!args[0]) {
     BoltyMod.BoltyEmbed(client).addField(
       `**Usage:**`,
-      `\`${client.config.prefix}temp-mute [user] [reason] (optional reason)\``
+      `\`${client.config.prefix}mute [user] [reason] (optional reason)\``
     );
   }
 
@@ -52,12 +52,13 @@ module.exports.run = async (client, message, args) => {
       return;
     }
 
-    if (!args[1]) {
+    /*if (!args[1]) {
       BoltyMod.BoltyEmbed(client).setDescription(
         `${BoltyMod.BoltyEmotes.wrong_error} Please specify a duration (1s, 1m, 1h, 1d...)`
       );
       return;
     }
+    */
 
     if (!reason) reason = "No reason was provided.";
 
@@ -69,12 +70,12 @@ module.exports.run = async (client, message, args) => {
           `https://cdn.discordapp.com/emojis/801791545060884510.png?v=1`
         )
         .addField(`Muted By:`, `\`${message.author.tag}\``)
-        .addField("Duration:", `\`${args[1]}\``)
+        // .addField("Duration:", `\`${args[1]}\``)
         .addField(`Reason:`, `\`${reason}\``)
         .setThumbnail(memberTarget.user.displayAvatarURL({ dynamic: true }))
     );
 
-    setTimeout(function () {
+    /*setTimeout(function () {
       memberTarget.roles.remove(muteRole.id);
       message.channel.send(
         BoltyMod.BoltyMuteEmbed(message).setDescription(
@@ -83,12 +84,14 @@ module.exports.run = async (client, message, args) => {
       );
     }, ms(args[1]));
   }
+  */
+  }
 };
 
 module.exports.help = {
-  name: "temp-mute",
-  description: "Mute someone temporary.",
-  aliases: ["tempmute", "tempm", "tm"],
+  name: "mute",
+  description: "Mute someone.",
+  aliases: ["mte", "m", "mute"],
   usage: "[user]",
   category: "Moderation",
 };
