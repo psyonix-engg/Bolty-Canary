@@ -51,5 +51,5 @@ module.exports.help = {
   description: "Will do basic setup so Bolty can work correctly!",
   aliases: ["stup", "st", "sp"],
   usage: "",
-  category: "Utility",
+  category: "Setup",
 };
