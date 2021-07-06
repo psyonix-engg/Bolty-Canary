@@ -5,6 +5,35 @@ const path = require("path");
 const { sep } = require("path");
 const BoltyUtil = require("./classes/BoltyUtil");
 require("dotenv").config();
+const Distube = require("distube");
+const mongoose = require("mongoose");
+const secret = require("./token_.json");
+
+const distube = new Distube(client, {
+  searchSongs: true,
+  emitNewSongOnly: true,
+  highWaterMark: 1 << 25,
+  leaveOnStop: false,
+  leaveOnEmpty: false,
+  leaveOnFinish: false,
+});
+
+mongoose
+  .connect(secret.mongoURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log(`[DATABASE] Sucessfully connected to MongoDB!`);
+  })
+  .catch((err) => {
+    console.log(
+      `[DATABASE] There was an error trying to connect to MongoDB: ${err}`
+    );
+  });
+
+client.distube = distube;
+const cooldowns = new Discord.Collection();
 
 client.config = require("./config.json");
 
@@ -47,10 +76,6 @@ const load = (dir = "./commands/") => {
             );
           client.aliases.set(alias, pull.help.name);
         });
-      }
-
-      if (!pull.help.ownerOnly) {
-        pull.help.ownerOnly = false;
       }
     }
   });
@@ -101,7 +126,134 @@ client.on("message", async (message) => {
   else if (client.aliases.has(cmd))
     command = client.commands.get(client.aliases.get(cmd));
 
+  if (command) {
+    if (!cooldowns.has(command.help.name)) {
+      cooldowns.set(command.help.name, new Discord.Collection());
+    }
+
+    const now = Date.now();
+    const timestamps = cooldowns.get(command.help.name);
+    const cooldownAmount = (command.help.cooldown || 2) * 1000;
+
+    if (timestamps.has(message.author.id)) {
+      const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+
+      if (now < expirationTime) {
+        const timeLeft = (expirationTime - now) / 1000;
+        return message.reply(
+          `Please wait ${timeLeft.toFixed(
+            1
+          )} more second(s) before reusing the \`${
+            command.help.name
+          }\` command.`
+        );
+      }
+    }
+
+    timestamps.set(message.author.id, now);
+    setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+  }
+
   if (command) command.run(client, message, args);
 });
-
 client.login(require("./token_.json").token).catch(console.error());
+
+/////////////////////MUSIC SYSTEM///////////////////////
+
+const filters = [
+  "3d",
+  "bassboost",
+  "echo",
+  "karaoke",
+  "nightcore",
+  "vaporwave",
+  "flanger",
+];
+
+const status = (queue) =>
+  `Volume: \`${queue.volume}\` | Filter: \`${
+    queue.filter || "OFF"
+  }\` | Loop: \`${
+    queue.repeatMode
+      ? queue.repeatMode === 2
+        ? "All Queue"
+        : "This Song"
+      : "Off"
+  }\` | Autoplay: \`${queue.autoplay ? "On" : "Off"}\``;
+
+distube
+  .on("playSong", (message, queue, song) => {
+    embedBuilder(
+      client,
+      message,
+      "GREEN",
+      "Playing new Song!",
+      `Song: \`${song.name}\`  -  \`${
+        song.formattedDuration
+      }\` \n\nRequested by: ${song.user}\n${status(queue)}`
+    );
+  })
+  .on("addSong", (message, queue, song) => {
+    embedBuilder(
+      client,
+      message,
+      `GREEN`,
+      `Added a Song!`,
+      `Song: \`${song.name}\`  -  \`${
+        song.formattedDuration
+      }\`\n\nRequested by: ${song.user}\n${status(queue)}`
+    );
+  })
+  .on("playList", (message, queue, playlist, song) => {
+    embedBuilder(
+      client,
+      message,
+      "GREEN",
+      "Playling playlist",
+      `Playlist: \`${playlist.name}\`  -  \`${
+        playlist.songs.length
+      } songs\` \n\nRequested by: ${song.user}\n\nstarting playing Song: \`${
+        song.name
+      }\`  -  \`${song.formattedDuration}\`\n${status(queue)}`
+    );
+  })
+  .on("addList", (message, queue, song) => {
+    embedBuilder(
+      client,
+      message,
+      "GREEN",
+      "Added a Playling!",
+      `Playlist: \`${playlist.title}\`  -  \`${playlist.total_items} songs\` \n\nRequested by: ${song.user}`
+    );
+  })
+  .on("searchResult", (message, result) => {
+    let i = 0;
+    embedBuilder(
+      client,
+      message,
+      "YELLOW",
+      "",
+      `**Choose an option from below**\n${result
+        .map(
+          (song) => `**${++i}**. ${song.name} - \`${song.formattedDuration}\``
+        )
+        .join("\n")}\n*Enter anything else or wait 60 seconds to cancel*`
+    );
+  })
+  // DisTubeOptions.searchSongs = true
+  .on("searchCancel", (message) =>
+    embedBuilder(client, message, "RED", `Searching canceled`, "")
+  )
+  .on("error", (message, err) =>
+    embedBuilder(client, message, "RED", "An error encountered:", err)
+  );
+
+function embedBuilder(client, message, color, title, description) {
+  let embed = new Discord.MessageEmbed()
+    .setColor(color)
+    .setFooter(client.user.username, client.user.displayAvatarURL());
+  if (title) embed.setTitle(title);
+  if (description) embed.setDescription(description);
+  return message.channel.send(embed);
+}
+module.exports.embedBuilder = embedBuilder;

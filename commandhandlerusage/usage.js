@@ -15,4 +15,5 @@ module.exports.help = {
   aliases: [""],
   usage: "",
   category: "",
+  cooldown: "",
 };

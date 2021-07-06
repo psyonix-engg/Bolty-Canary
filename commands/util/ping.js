@@ -40,4 +40,5 @@ module.exports.help = {
   aliases: ["ping", "latency", "speed"],
   usage: "",
   category: "Util",
+  cooldown: 3,
 };

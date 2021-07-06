@@ -1,9 +1,8 @@
 const { MessageEmbed, Message, Client } = require("discord.js");
 const config = require("../config.json");
 
-class BoltyInfo {
+class BoltyUtil {
   /**
-   * @param {Message} message
    * @param {Client} client
    */
   static BoltyEmbed(client) {
@@ -18,12 +17,27 @@ class BoltyInfo {
   }
 
   /**
-   *
    * @param {Client} client
    * @param {Message} message
    */
-  static BoltyInfoEmbed(client, message) {
-    return new MessageEmbed().setTimestamp(new Date());
+  static normalBoltyEmbed(message, client) {
+    return new MessageEmbed()
+      .setColor("RANDOM")
+      .setFooter(
+        `Requested By ${message.author.tag}`,
+        message.author.displayAvatarURL({ dynamic: true })
+      );
+  }
+
+  /**
+   * @param {Client} client
+   * @param {Message} message
+   */
+  static musicBoltyEmbed(client, message) {
+    return new MessageEmbed()
+      .setColor("YELLOW")
+      .setFooter(client.user.username, client.user.displayAvatarURL())
+      .setTimestamp(new Date());
   }
 
   static BoltyEmotes = {
@@ -32,11 +46,12 @@ class BoltyInfo {
     mod: "<:mod:855399096315019294>",
     wrong_error: "<:error:856125687567613973>",
     success: "<:success:855888059978743819>",
+    music: "<a:musicplay:861692703644975104>",
   };
 
-  static BoltySuccess = {
-    successLink: "https://cdn.discordapp.com/emojis/801791545060884510.png?v=1",
+  static BoltyUrls = {
+    error: "https://emoji.discord.st/emojis/Error.png",
   };
 }
 
-module.exports = BoltyInfo;
+module.exports = BoltyUtil;

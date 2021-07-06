@@ -57,6 +57,7 @@ module.exports.run = async (client, message, args) => {
         `❯      **Category:** \`${
           command.category ? command.category : "General" || "Misc"
         }\``,
+        `❯      **Cooldown:** \`${command.cooldown ? command.cooldown : "2"}\``,
       ].join("\n")
     );
 

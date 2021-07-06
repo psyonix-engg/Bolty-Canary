@@ -37,6 +37,8 @@ module.exports.run = async (client, message, args) => {
     if (target.id in warnDATA[message.guild.id] === false) {
       warnDATA[message.guild.id][target.id] = {
         warnings: 0,
+        reasons: [],
+        dates: [],
       };
       fs.writeFile(path, JSON.stringify(warnDATA, null, 4), (err) => {
         if (err) console.log(err);
@@ -44,6 +46,19 @@ module.exports.run = async (client, message, args) => {
     }
 
     warnDATA[message.guild.id][target.id].warnings++;
+
+    warnDATA[message.guild.id][target.id].reasons.push(reason);
+
+    //date constructor
+
+    var current = new Date();
+    var month = current.getMonth();
+    var day = current.getDate();
+    var year = current.getFullYear();
+    var date = `${day}/${month}/${year}`;
+
+    warnDATA[message.guild.id][target.id].dates.push(date);
+
     fs.writeFile(path, JSON.stringify(warnDATA, null, 4), (err) => {
       if (err) console.log(err);
     });
