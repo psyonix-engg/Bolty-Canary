@@ -70,6 +70,7 @@ module.exports.run = async (client, message, args) => {
   let resence = true;
 
   let embed = BoltyInfoEmbed(client, message)
+    .setColor(member.displayHexColor || "RANDOM")
     .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
     .setFooter(`Requested by ${message.author.username}`)
     .addField("Full Username", `${member.user.tag}`, inline)
@@ -121,7 +122,7 @@ module.exports.run = async (client, message, args) => {
       }`,
       inline
     );
-  message.channel.send(embed);
+  message.channel.send({ embeds: [embed] });
 };
 
 module.exports.help = {

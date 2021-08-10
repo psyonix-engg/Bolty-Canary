@@ -12,9 +12,11 @@ const { topics } = require("../../assets/json/topics.json");
 module.exports.run = async (client, message, args) => {
   let randomTopic = topics[Math.round(Math.random() * topics.length)];
 
-  message.channel.send(
-    BoltyFun.BoltyFunEmbed(client).setDescription(`**${randomTopic}**`)
-  );
+  message.channel.send({
+    embeds: [
+      BoltyFun.BoltyFunEmbed(client).setDescription(`**${randomTopic}**`),
+    ],
+  });
 };
 
 module.exports.help = {

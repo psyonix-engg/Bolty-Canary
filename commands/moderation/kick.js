@@ -31,20 +31,22 @@ module.exports.run = async (client, message, args) => {
 
     var reason = args[1];
 
-    if (reason === undefined) reason = "No reason was provided."
+    if (reason === undefined) reason = "No reason was provided.";
 
     if (member.kickable) {
-      member.kick(reason)
-      message.channel.send(
-        BoltyMod.BoltyKickEmbed(message)
-          .setAuthor(
-            `${member.user.tag} was kicked`,
-            `https://cdn.discordapp.com/emojis/801791545060884510.png?v=1`
-          )
-          .addField(`**Kicked By:**`, `\`${message.author.tag}\``)
-          .addField(`**Reason:**`, `\`${reason}\``)
-          .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
-      )
+      member.kick(reason);
+      message.channel.send({
+        embeds: [
+          BoltyMod.BoltyKickEmbed(message)
+            .setAuthor(
+              `${member.user.tag} was kicked`,
+              `https://cdn.discordapp.com/emojis/801791545060884510.png?v=1`
+            )
+            .addField(`**Kicked By:**`, `\`${message.author.tag}\``)
+            .addField(`**Reason:**`, `\`${reason}\``)
+            .setThumbnail(member.user.displayAvatarURL({ dynamic: true })),
+        ],
+      });
     }
   } else {
     message.channel.send(

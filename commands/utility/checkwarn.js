@@ -57,7 +57,7 @@ module.exports.run = async (client, message, args) => {
       );
     }
 
-    message.channel.send(embed);
+    message.channel.send({ embeds: [embed] });
     return;
   }
 
@@ -99,7 +99,7 @@ module.exports.run = async (client, message, args) => {
     );
   }
 
-  message.channel.send(embed);
+  message.channel.send({ embeds: [embed] });
 };
 
 module.exports.help = {

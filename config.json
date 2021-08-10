@@ -4,7 +4,10 @@
     "blackColor": "#090714",
     "blueColor": "#5B52FF",
     "boltyEmbedColor": "#b117d4",
-    "yellowColor": "#FFCA50"
+    "yellowColor": "#FFCA50",
+    "kindaPinkColor": "#ff6666",
+    "kindaRedColor": "#990000",
+    "differentYellow": "#fcc603"
     },
     "owners": {
         "Psyonix": "510866456708382730",

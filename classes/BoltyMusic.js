@@ -40,6 +40,19 @@ class BoltyUtil {
       .setTimestamp(new Date());
   }
 
+  /**
+   * @param {Client} client
+   * @param {Message} message
+   * @returns Error embed
+   */
+
+  static musicErrorBoltyEmb(client, message) {
+    return new MessageEmbed()
+      .setColor("RED")
+      .setFooter(client.user.username, client.user.displayAvatarURL())
+      .setTimestamp(new Date());
+  }
+
   static BoltyEmotes = {
     info: "<:info:855396289798078465>",
     fun: "<a:fun:855398438547619860>",

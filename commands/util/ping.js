@@ -14,11 +14,12 @@ module.exports.run = async (client, message, args) => {
     new MessageEmbed().setColor("RED").setDescription(".....")
   );
 
-  return pingMsg.edit(
-    BoltyUtil.BoltyEmbed(client)
-      .setTitle("Pong!")
-      .setDescription(
-        oneLine`
+  return pingMsg.edit({
+    embeds: [
+      BoltyUtil.BoltyEmbed(client)
+        .setTitle("Pong!")
+        .setDescription(
+          oneLine`
       ${message.channel.type !== "dm" ? `${message.author},` : ""}
 			Pong! The message round-trip took **${
         (pingMsg.editedTimestamp || pingMsg.createdTimestamp) -
@@ -30,8 +31,9 @@ module.exports.run = async (client, message, args) => {
           : ""
       }
       `
-      )
-  );
+        ),
+    ],
+  });
 };
 
 module.exports.help = {

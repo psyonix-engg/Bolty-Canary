@@ -13,9 +13,11 @@ module.exports.run = async (client, message, args) => {
 
   let guild = message.guild;
 
-  let msg = await message.channel.send(
-    BoltyUtil.BoltyEmbed(client).setDescription(`Starting the setup...`)
-  );
+  let msg = await message.channel.send({
+    embeds: [
+      BoltyUtil.BoltyEmbed(client).setDescription(`Starting the setup...`),
+    ],
+  });
 
   guild.roles
     .create({
@@ -27,23 +29,29 @@ module.exports.run = async (client, message, args) => {
       reason: "Bolty Bot Setup",
     })
     .catch((e) => {
-      message.channel.send(
-        BoltyUtil.BoltyEmbed(client).setDescription(
-          `${BoltyUtil.BoltyEmotes.wrong_error} There was an error, please check that the bot have the proper permissions.\n${e}`
-        )
-      );
+      message.channel.send({
+        embeds: [
+          BoltyUtil.BoltyEmbed(client).setDescription(
+            `${BoltyUtil.BoltyEmotes.wrong_error} There was an error, please check that the bot have the proper permissions.\n${e}`
+          ),
+        ],
+      });
     });
 
-  msg.edit(
-    BoltyUtil.BoltyEmbed(client).setDescription(`Created The Muted Role`)
-  );
+  msg.edit({
+    embeds: [
+      BoltyUtil.BoltyEmbed(client).setDescription(`Created The Muted Role`),
+    ],
+  });
   msg.delete({ timeout: 3000 });
 
-  message.channel.send(
-    BoltyUtil.BoltyEmbed(client).setDescription(
-      `${BoltyUtil.BoltyEmotes.success} The Setup was successful!\nI have created the muted role, so you can mute people.`
-    )
-  );
+  message.channel.send({
+    embeds: [
+      BoltyUtil.BoltyEmbed(client).setDescription(
+        `${BoltyUtil.BoltyEmotes.success} The Setup was successful!\nI have created the muted role, so you can mute people.`
+      ),
+    ],
+  });
 };
 
 module.exports.help = {

@@ -12,29 +12,33 @@ module.exports.run = async (client, message, args) => {
   let number = args.slice(1).join(" ");
 
   if (isNaN(number))
-    message.channel.send(
-      BoltyFun.BoltyFunEmbed(client)
-        .setDescription(
-          `That was **not** a valid number, please provide a valid number.`
-        )
-        .setAuthor(
-          `${BoltyFun.BoltyEmotes.wrong_error} Error`,
-          message.author.displayAvatarURL({ dynamic: true })
-        )
-    );
+    message.channel.send({
+      embeds: [
+        BoltyFun.BoltyFunEmbed(client)
+          .setDescription(
+            `That was **not** a valid number, please provide a valid number.`
+          )
+          .setAuthor(
+            `${BoltyFun.BoltyEmotes.wrong_error} Error`,
+            message.author.displayAvatarURL({ dynamic: true })
+          ),
+      ],
+    });
 
   if (!number) number = 6;
 
   let n = Math.floor(Math.random() * number + 1);
 
-  message.channel.send(
-    BoltyFun.BoltyFunEmbed(client)
-      .setDescription(`${message.author}, you rolled **${n}**!`)
-      .setFooter(
-        message.author.username,
-        message.author.displayAvatarURL({ dynamic: true })
-      )
-  );
+  message.channel.send({
+    embeds: [
+      BoltyFun.BoltyFunEmbed(client)
+        .setDescription(`${message.author}, you rolled **${n}**!`)
+        .setFooter(
+          message.author.username,
+          message.author.displayAvatarURL({ dynamic: true })
+        ),
+    ],
+  });
 };
 
 module.exports.help = {

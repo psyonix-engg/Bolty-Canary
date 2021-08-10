@@ -24,19 +24,23 @@ module.exports.run = async (client, message, args) => {
     .duration(client.uptime)
     .format(" D [days], H [hrs], m [mins], s [secs]");
 
-  const msg = await message.channel.send(
-    BoltyInfo.BoltyEmbed(client).setAuthor(
-      `Loading...`,
-      `${BoltyInfo.BoltySuccess.successLink}`
-    )
-  );
-  msg
-    .edit(
+  const msg = await message.channel.send({
+    embeds: [
       BoltyInfo.BoltyEmbed(client).setAuthor(
-        `Loaded!...`,
-        `${BoltyInfo.BoltySuccess.successLink}`
-      )
-    )
+        `Loading...`,
+        `${BoltyInfo.BoltyUrls.successLink}`
+      ),
+    ],
+  });
+  msg
+    .edit({
+      embeds: [
+        BoltyInfo.BoltyEmbed(client).setAuthor(
+          `Loaded!...`,
+          `${BoltyInfo.BoltyUrls.successLink}`
+        ),
+      ],
+    })
     .then(msg.delete());
 
   const ping = msg.createdTimestamp - message.createdTimestamp;
@@ -46,6 +50,7 @@ module.exports.run = async (client, message, args) => {
   let botinfoEmbed = BoltyInfo.BoltyEmbed(client).setTitle(
     `Information About ${client.user.tag}`
   ).setDescription(`
+  I was made by **Psyonix_#9705** And **Richardko3#8888**.\n
   **__General Information__**
         \u200b
         <:API:819891596635275284> API Latency  ::   **${client.ws.ping}MS**
@@ -74,7 +79,7 @@ module.exports.run = async (client, message, args) => {
         ).toLocaleString()}**
   `);
 
-  message.channel.send(botinfoEmbed);
+  message.channel.send({ embeds: [botinfoEmbed] });
 };
 
 module.exports.help = {
@@ -83,4 +88,5 @@ module.exports.help = {
   aliases: ["bi", "botinf", "bot"],
   usage: "",
   category: "Info",
+  cooldown: 10,
 };

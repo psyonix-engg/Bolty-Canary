@@ -14,11 +14,13 @@ module.exports.run = async (client, message, args) => {
     wyrQuestions[Math.round(Math.random() * wyrQuestions.length)];
 
   message.channel
-    .send(
-      BoltyFun.BoltyFunEmbed(client)
-        .setTitle(`**Would You Rather?**`)
-        .setDescription(`**${wyrQuestion}**`)
-    )
+    .send({
+      embeds: [
+        BoltyFun.BoltyFunEmbed(client)
+          .setTitle(`**Would You Rather?**`)
+          .setDescription(`**${wyrQuestion}**`),
+      ],
+    })
     .then((msg) => {
       msg.react("856895358897881088");
       msg.react("856125687567613973");

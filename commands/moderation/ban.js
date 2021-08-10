@@ -30,13 +30,37 @@ module.exports.run = async (client, message, args) => {
   if (target) {
     const member = guild.members.cache.get(target.id);
 
-    const reason = args.slice(1).join(" ");
+    let reason = args.slice(1).join(" ");
 
     if (!reason) reason = "No reason was provided.";
 
     if (member.bannable) {
+      member.send({
+        embeds: [
+          BoltyMod.BoltyKickEmbed(message)
+            .setAuthor(`${member.user.tag} you were banned from ${guild.name}`)
+            .setThumbnail(guild.iconURL({ dynamic: true }))
+            .addField(`Banned By`, `\`${message.author.tag}\``)
+            .addField(`Reason`, `\`${reason}\``),
+        ],
+      });
       member.ban({ reason: reason, days: 0 });
-      message.channel.send(
+      message.channel.send({
+        embeds: [
+          BoltyMod.BoltyKickEmbed(message)
+            .setAuthor(
+              `${member.user.tag} was banned`,
+              `https://cdn.discordapp.com/emojis/801791545060884510.png?v=1`
+            )
+            .addField(`Banned By:`, `\`${message.author.tag}\``)
+            .addField(`Reason:`, `\`${reason}\``)
+            .setThumbnail(member.user.displayAvatarURL({ dynamic: true })),
+        ],
+      });
+      /*
+      message.channel.send({
+        embeds: [
+      
         BoltyMod.BoltyKickEmbed(message)
           .setAuthor(
             `${member.user.tag} was banned`,
@@ -45,7 +69,9 @@ module.exports.run = async (client, message, args) => {
           .addField(`Kicked By:`, `\`${message.author.tag}\``)
           .addField(`Reason:`, `\`${reason}\``)
           .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
-      );
+      )
+        ]})
+        */
     } else {
       message.channel.send(
         BoltyMod.BoltyEmbed(client).setDescription(

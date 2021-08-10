@@ -30,13 +30,16 @@ module.exports.run = async (client, message, args) => {
     }
 
     if (!cmd)
-      return message.channel.send(
-        embed
-          .setTitle("Invalid Command.")
-          .setDescription(
-            `Type \`${client.config.prefix}help\` for the list of the commands.`
-          )
-      );
+      return message.channel.send({
+        embeds: [
+          embed
+            .setTitle("Invalid Command.")
+            .setDescription(
+              `Type \`${client.config.prefix}help\` for the list of the commands.`
+            ),
+        ],
+      });
+
     command = cmd.help;
     embed.setDescription(
       [
@@ -57,11 +60,13 @@ module.exports.run = async (client, message, args) => {
         `❯      **Category:** \`${
           command.category ? command.category : "General" || "Misc"
         }\``,
-        `❯      **Cooldown:** \`${command.cooldown ? command.cooldown : "2"}\``,
+        `❯      **Cooldown:** \`${
+          command.cooldown ? `${command.cooldown}s` : "2s"
+        }\``,
       ].join("\n")
     );
 
-    return message.channel.send(embed);
+    return message.channel.send({ embeds: [embed] });
   }
 
   const categories = readdirSync("./commands/");
@@ -98,7 +103,7 @@ module.exports.run = async (client, message, args) => {
       console.log(e);
     }
   });
-  return message.channel.send(embed);
+  return message.channel.send({ embeds: [embed] });
 };
 
 module.exports.help = {

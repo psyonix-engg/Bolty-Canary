@@ -32,11 +32,13 @@ module.exports.run = async (client, message, args) => {
     );
 
     if (!message.guild.member(memberTarget).roles.cache.has(muteRole.id))
-      message.channel.send(
-        BoltyMod.BoltyEmbed(client)
-          .setAuthor(`Error`, `https://emoji.discord.st/emojis/Error.png`)
-          .setDescription(`${memberTarget.user.tag} is not muted.`)
-      );
+      message.channel.send({
+        embeds: [
+          BoltyMod.BoltyEmbed(client)
+            .setAuthor(`Error`, `https://emoji.discord.st/emojis/Error.png`)
+            .setDescription(`${memberTarget.user.tag} is not muted.`),
+        ],
+      });
 
     message.guild.member(memberTarget).roles.remove(muteRole.id);
 

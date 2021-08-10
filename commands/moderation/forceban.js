@@ -32,16 +32,18 @@ module.exports.run = async (client, message, args) => {
   client.users.fetch(userToUnban).then(async (user) => {
     await message.guild.members.ban(user.id, { reason: reason });
 
-    message.channel.send(
-      BoltyMod.BoltyKickEmbed(message)
-        .setAuthor(
-          `${user.tag} was forcebanned`,
-          `https://cdn.discordapp.com/emojis/801791545060884510.png?v=1`
-        )
-        .addField(`Forcebanned By:`, `\`${message.author.tag}\``)
-        .addField(`Reason:`, `\`${reason}\``)
-        .setThumbnail(user.displayAvatarURL({ dynamic: true }))
-    );
+    message.channel.send({
+      embeds: [
+        BoltyMod.BoltyKickEmbed(message)
+          .setAuthor(
+            `${user.tag} was forcebanned`,
+            `https://cdn.discordapp.com/emojis/801791545060884510.png?v=1`
+          )
+          .addField(`Forcebanned By:`, `\`${message.author.tag}\``)
+          .addField(`Reason:`, `\`${reason}\``)
+          .setThumbnail(user.displayAvatarURL({ dynamic: true })),
+      ],
+    });
   });
 };
 

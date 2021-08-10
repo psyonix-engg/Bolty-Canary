@@ -94,6 +94,11 @@ class BoltyMod {
     wrong_error: "<:error:856125687567613973>",
     success: "<:success:855888059978743819>",
   };
+
+  static BoltyUrls = {
+    successLink: "https://cdn.discordapp.com/emojis/801791545060884510.png?v=1",
+    errorLink: "https://emoji.discord.st/emojis/Error.png",
+  };
 }
 
 module.exports = BoltyMod;

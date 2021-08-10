@@ -23,10 +23,14 @@ module.exports.run = async (client, message, args) => {
   var reason = args.slice(2).join(" ");
 
   if (!args[0]) {
-    BoltyMod.BoltyEmbed(client).addField(
-      `**Usage:**`,
-      `\`${client.config.prefix}temp-mute [user] [reason] (optional reason)\``
-    );
+    message.channel.send({
+      embeds: [
+        BoltyMod.BoltyEmbed(client).addField(
+          `**Usage:**`,
+          `\`${client.config.prefix}temp-mute [user] [reason] (optional reason)\``
+        ),
+      ],
+    });
   }
 
   if (target) {
@@ -44,43 +48,58 @@ module.exports.run = async (client, message, args) => {
     let memberTarget = message.guild.members.cache.get(target.id);
 
     if (!target) {
-      message.reply(
-        BoltyMod.BoltyMuteEmbed(message).setDescription(
-          `${BoltyMod.BoltyEmotes.wrong_error} Please specify a user to mute.`
-        )
-      );
+      message.reply({
+        embeds: [
+          BoltyMod.BoltyMuteEmbed(message).setDescription(
+            `${BoltyMod.BoltyEmotes.wrong_error} Please specify a user to mute.`
+          ),
+        ],
+      });
       return;
     }
 
     if (!args[1]) {
-      BoltyMod.BoltyEmbed(client).setDescription(
-        `${BoltyMod.BoltyEmotes.wrong_error} Please specify a duration (1s, 1m, 1h, 1d...)`
-      );
+      message.channel.send({
+        embeds: [
+          BoltyMod.BoltyEmbed(client).setDescription(
+            `\n\n${BoltyMod.BoltyEmotes.wrong_error} Please specify a duration (1s, 1m, 1h, 1d...)`
+          ),
+        ],
+      });
+
       return;
     }
 
     if (!reason) reason = "No reason was provided.";
 
     memberTarget.roles.add(muteRole.id);
-    message.channel.send(
-      BoltyMod.BoltyMuteEmbed(message)
-        .setAuthor(
-          `${memberTarget.user.tag} was muted`,
-          `https://cdn.discordapp.com/emojis/801791545060884510.png?v=1`
-        )
-        .addField(`Muted By:`, `\`${message.author.tag}\``)
-        .addField("Duration:", `\`${args[1]}\``)
-        .addField(`Reason:`, `\`${reason}\``)
-        .setThumbnail(memberTarget.user.displayAvatarURL({ dynamic: true }))
-    );
+    message.channel.send({
+      embeds: [
+        BoltyMod.BoltyMuteEmbed(message)
+          .setAuthor(
+            `${memberTarget.user.tag} was muted`,
+            `https://cdn.discordapp.com/emojis/801791545060884510.png?v=1`
+          )
+          .addField(`Muted By:`, `\`${message.author.tag}\``)
+          .addField("Duration:", `\`${args[1]}\``)
+          .addField(`Reason:`, `\`${reason}\``)
+          .setThumbnail(memberTarget.user.displayAvatarURL({ dynamic: true })),
+      ],
+    });
 
     setTimeout(function () {
       memberTarget.roles.remove(muteRole.id);
-      message.channel.send(
-        BoltyMod.BoltyMuteEmbed(message).setDescription(
-          `${BoltyMod.BoltyEmotes.success} **${memberTarget.user.tag}** has been unmuted.`
-        )
-      );
+      message.channel
+        .send({
+          embeds: [
+            BoltyMod.BoltyMuteEmbed(message).setDescription(
+              `${BoltyMod.BoltyEmotes.success} **${memberTarget.user.tag}** has been unmuted.`
+            ),
+          ],
+        })
+        .then((m) => {
+          setTimeout(() => m.delete(), 15000);
+        });
     }, ms(args[1]));
   }
 };

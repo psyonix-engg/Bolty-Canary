@@ -22,13 +22,15 @@ module.exports.run = async (client, message, args) => {
   if (reason === undefined) reason = "No reason was provided.";
 
   if (isNaN(userToUnban))
-    message.channel.send(
-      BoltyMod.BoltyEmbed(client)
-        .setAuthor(`Error`, `https://emoji.discord.st/emojis/Error.png`)
-        .setDescription(
-          `The ID that was provided wasn't with numbers, the ID **must** be numbers.`
-        )
-    );
+    message.channel.send({
+      embeds: [
+        BoltyMod.BoltyEmbed(client)
+          .setAuthor(`Error`, `https://emoji.discord.st/emojis/Error.png`)
+          .setDescription(
+            `The ID that was provided wasn't with numbers, the ID **must** be numbers.`
+          ),
+      ],
+    });
 
   /* if (userToUnban < 18) {
     message.channel.send(
@@ -49,28 +51,32 @@ module.exports.run = async (client, message, args) => {
   }
   */
 
-  message.guild.fetchBans().then((bans) => {
+  message.guild.bans.fetch().then((bans) => {
     if (bans.size == 0)
-      message.channel.send(
-        BoltyMod.BoltyBanEmbed(message)
-          .setAuthor(`Error`, `https://emoji.discord.st/emojis/Error.png`)
-          .setDescription(`**Member was not unbanned**.`)
-      );
+      message.channel.send({
+        embeds: [
+          BoltyMod.BoltyBanEmbed(message)
+            .setAuthor(`Error`, `https://emoji.discord.st/emojis/Error.png`)
+            .setDescription(`**Member was not unbanned**.`),
+        ],
+      });
 
     let usertoUnban = bans.find((usr) => usr.user.id == userToUnban);
     if (!usertoUnban) return;
     message.guild.members.unban(usertoUnban.user.id);
 
-    message.channel.send(
-      BoltyMod.BoltyBannedEmbed(message)
-        .setAuthor(
-          `${usertoUnban.user.tag} was unbanned`,
-          `https://cdn.discordapp.com/emojis/801791545060884510.png?v=1`
-        )
-        .addField(`Unbanned By:`, `\`${message.author.tag}\``)
-        .addField(`Reason:`, `\`${reason}\``)
-        .setThumbnail(usertoUnban.user.displayAvatarURL({ dynamic: true }))
-    );
+    message.channel.send({
+      embeds: [
+        BoltyMod.BoltyBannedEmbed(message)
+          .setAuthor(
+            `${usertoUnban.user.tag} was unbanned`,
+            `https://cdn.discordapp.com/emojis/801791545060884510.png?v=1`
+          )
+          .addField(`Unbanned By:`, `\`${message.author.tag}\``)
+          .addField(`Reason:`, `\`${reason}\``)
+          .setThumbnail(usertoUnban.user.displayAvatarURL({ dynamic: true })),
+      ],
+    });
   });
 };
 

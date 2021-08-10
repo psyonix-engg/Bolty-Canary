@@ -35,7 +35,7 @@ module.exports.run = async (client, message, args) => {
     .setDescription(
       `**Animated [${Animated}]**:\n${EmojisAnimated}\n\n**Standard [${EmojiCount}]**:\n${Emojis}\n\n**Over all emojis [${OverallEmojis}]**`
     );
-  message.channel.send(embed);
+  message.channel.send({ embeds: [embed] });
 };
 
 module.exports.help = {

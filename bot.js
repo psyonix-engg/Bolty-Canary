@@ -1,5 +1,15 @@
 const Discord = require("discord.js");
-const client = new Discord.Client();
+const client = new Discord.Client({
+  intents: [
+    Discord.Intents.FLAGS.GUILDS,
+    Discord.Intents.FLAGS.GUILD_MESSAGES,
+    Discord.Intents.FLAGS.GUILD_MEMBERS,
+  ],
+  allowedMentions: {
+    parse: ["users", "roles"],
+    repliedUser: true,
+  },
+});
 const fs = require("fs");
 const path = require("path");
 const { sep } = require("path");
@@ -35,10 +45,22 @@ mongoose
 client.distube = distube;
 const cooldowns = new Discord.Collection();
 
+global.client = { client };
+module.exports = { client };
+
+const guildSettings = new Discord.Collection();
+
+client.guildSettings = guildSettings;
+
 client.config = require("./config.json");
 
 const { prefix, blackColor, blueColor } = require("./config.json");
 const { token } = require("./token_.json");
+const { BoltyMuteEmbed } = require("./classes/BoltyMod");
+const { cpuUsage } = require("process");
+const { mod } = require("mathjs");
+const { BoltyEmbed } = require("./classes/BoltyMusic");
+const { stripIndent } = require("common-tags");
 
 ["commands", "aliases"].forEach((x) => (client[x] = new Discord.Collection()));
 
@@ -83,6 +105,7 @@ const load = (dir = "./commands/") => {
 
 load();
 
+require("./mainGuildBoltyLogs/messageDelete");
 client.on("ready", async () => {
   client.user.setPresence({
     activity: {
@@ -94,7 +117,96 @@ client.on("ready", async () => {
   console.log("ready!");
 });
 
-client.on("message", async (message) => {
+client.on("guildCreate", async (guild) => {
+  let logChannel = "866652984674746399";
+  const config = require("./config.json");
+
+  const guildInfo = stripIndent`
+   Guild ID  :: ${guild.id}
+   Guild Voice Channels :: ${
+     guild.channels.cache.filter((x) => x.type === "voice").size
+   }
+   Guild Text Channels :: ${
+     guild.channels.cache.filter((x) => x.type === "text").size
+   }
+  `;
+
+  const ownerInfo = stripIndent`
+   Owner Tag :: ${guild.owner.user.tag}
+   Owner ID  :: ${guild.owner.id}
+  `;
+
+  client.channels.cache.get(logChannel).send(
+    new Discord.MessageEmbed()
+      .setAuthor(`Added Guild!`, guild.iconURL({ dynamic: true }))
+      .setTitle(`I was added to a guild`)
+      .setThumbnail(guild.iconURL({ dynamic: true }))
+      .setColor(config.colors.boltyEmbedColor)
+      .addField(`Guild Name`, `\`${guild.name}\``, true)
+      .addField(`Guild Members`, `\`${guild.memberCount}\``, true)
+      .addField(`Guild Information`, `\`\`\`asciidoc\n${guildInfo}\`\`\``)
+      .addField(`Owner Information`, `\`\`\`asciidoc\n${ownerInfo}\`\`\``)
+
+      // .addField(
+      //`Guild Information`,
+      //  `${guild.name} (${guild.id}) **${guild.memberCount}** members.`
+      //   )
+      //.addField(
+      //`Owner Information`,
+      //`${guild.owner.user.tag} (${guild.owner.id}).`
+      // )
+      .setFooter(`Currently in ${client.guilds.cache.size} guilds.`)
+  );
+});
+
+client.on("guildDelete", async (guild) => {
+  const config = require("./config.json");
+  let logChannel = "866652984674746399";
+
+  /*
+  Guild Name :: ${guild.name}
+   Guild MemberCount :: ${guild.memberCount}
+   */
+
+  const guildInfo = stripIndent`
+   Guild ID  :: ${guild.id}
+   Guild Voice Channels :: ${
+     guild.channels.cache.filter((x) => x.type === "voice").size
+   }
+   Guild Text Channels :: ${
+     guild.channels.cache.filter((x) => x.type === "text").size
+   }
+  `;
+
+  const ownerInfo = stripIndent`
+   Owner Tag :: ${guild.owner.user.tag}
+   Owner ID  :: ${guild.owner.id}
+  `;
+
+  client.channels.cache.get(logChannel).send(
+    new Discord.MessageEmbed()
+      .setAuthor(`Removed Guild`, guild.iconURL({ dynamic: true }))
+      .setTitle(`I was removed from a guild`)
+      .setThumbnail(guild.iconURL({ dynamic: true }))
+      .setColor(config.colors.boltyEmbedColor)
+      .addField(`Guild Name`, `\`${guild.name}\``, true)
+      .addField(`Guild Members`, `\`${guild.memberCount}\``, true)
+      .addField(`Guild Information`, `\`\`\`asciidoc\n${guildInfo}\`\`\``)
+      .addField(`Owner Information`, `\`\`\`asciidoc\n${ownerInfo}\`\`\``)
+
+      // .addField(
+      //`Guild Information`,
+      //  `${guild.name} (${guild.id}) **${guild.memberCount}** members.`
+      //   )
+      //.addField(
+      //`Owner Information`,
+      //`${guild.owner.user.tag} (${guild.owner.id}).`
+      // )
+      .setFooter(`Currently in ${client.guilds.cache.size} guilds.`)
+  );
+});
+
+client.on("messageCreate", async (message) => {
   const mentionRegex = RegExp(`^<@!${client.user.id}>$`);
 
   const mentionRegexPrefix = RegExp(`^<@!${client.user.id}> `);
@@ -154,22 +266,48 @@ client.on("message", async (message) => {
     setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
   }
 
-  if (command) command.run(client, message, args);
+  //music filters
+  const filters = [
+    "3d",
+    "bassboost",
+    "echo",
+    "karaoke",
+    "nightcore",
+    "vaporwave",
+    "flanger",
+  ];
+
+  if (filters.includes(command)) {
+    let filter = client.distube.setFilter(message, command);
+    embedBuilder(
+      client,
+      message,
+      "BLURPLE",
+      `Queue Filter`,
+      `Currect queue filter is:  \`${filter || "Off"}\``
+    );
+  }
+
+  try {
+    if (command) command.run(client, message, args);
+  } catch (err) {
+    message.reply(
+      BoltyMuteEmbed(message)
+        .setAuthor(
+          `Error while running`,
+          message.author.displayAvatarURL({ dynamic: true })
+        )
+        .setDescription(
+          `There was an error trying to run the command \`${command.help.name}\`.\n\`${err.message}\``
+        )
+    );
+  }
 });
 client.login(require("./token_.json").token).catch(console.error());
 
 /////////////////////MUSIC SYSTEM///////////////////////
 
-const filters = [
-  "3d",
-  "bassboost",
-  "echo",
-  "karaoke",
-  "nightcore",
-  "vaporwave",
-  "flanger",
-];
-
+/*
 const status = (queue) =>
   `Volume: \`${queue.volume}\` | Filter: \`${
     queue.filter || "OFF"
@@ -180,6 +318,7 @@ const status = (queue) =>
         : "This Song"
       : "Off"
   }\` | Autoplay: \`${queue.autoplay ? "On" : "Off"}\``;
+  */
 
 distube
   .on("playSong", (message, queue, song) => {
@@ -188,9 +327,7 @@ distube
       message,
       "GREEN",
       "Playing new Song!",
-      `Song: \`${song.name}\`  -  \`${
-        song.formattedDuration
-      }\` \n\nRequested by: ${song.user}\n${status(queue)}`
+      `Song: \`${song.name}\`  -  \`${song.formattedDuration}\` \n\nRequested by: ${song.user}`
     );
   })
   .on("addSong", (message, queue, song) => {
@@ -199,9 +336,7 @@ distube
       message,
       `GREEN`,
       `Added a Song!`,
-      `Song: \`${song.name}\`  -  \`${
-        song.formattedDuration
-      }\`\n\nRequested by: ${song.user}\n${status(queue)}`
+      `Song: \`${song.name}\`  -  \`${song.formattedDuration}\`\n\nRequested by: ${song.user}`
     );
   })
   .on("playList", (message, queue, playlist, song) => {
@@ -210,11 +345,7 @@ distube
       message,
       "GREEN",
       "Playling playlist",
-      `Playlist: \`${playlist.name}\`  -  \`${
-        playlist.songs.length
-      } songs\` \n\nRequested by: ${song.user}\n\nstarting playing Song: \`${
-        song.name
-      }\`  -  \`${song.formattedDuration}\`\n${status(queue)}`
+      `Playlist: \`${playlist.name}\`  -  \`${playlist.songs.length} songs\` \n\nRequested by: ${song.user}\n\nstarting playing Song: \`${song.name}\`  -  \`${song.formattedDuration}\``
     );
   })
   .on("addList", (message, queue, song) => {
@@ -254,6 +385,6 @@ function embedBuilder(client, message, color, title, description) {
     .setFooter(client.user.username, client.user.displayAvatarURL());
   if (title) embed.setTitle(title);
   if (description) embed.setDescription(description);
-  return message.channel.send(embed);
+  return message.channel.send({ embeds: [embed] });
 }
 module.exports.embedBuilder = embedBuilder;

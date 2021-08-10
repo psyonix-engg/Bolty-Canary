@@ -22,15 +22,19 @@ module.exports.run = async (client, message, args) => {
   const { guild } = message;
 
   if (!target) {
-    BoltyMod.BoltyEmbed(client).setDescription(
-      `${BoltyMod.BoltyEmotes.wrong_error} you did not provide any member to softban, please mention the user or provide their ID.`
-    );
+    message.channel.send({
+      embeds: [
+        BoltyMod.BoltyEmbed(client).setDescription(
+          `${BoltyMod.BoltyEmotes.wrong_error} you did not provide any member to softban, please mention the user or provide their ID.`
+        ),
+      ],
+    });
   }
 
   if (target) {
     const member = guild.members.cache.get(target.id);
 
-    var reason = args[1];
+    var reason = args.slice(1).join(" ");
 
     if (reason === undefined) reason = "No reason was provided.";
 
@@ -38,22 +42,26 @@ module.exports.run = async (client, message, args) => {
       member
         .ban({ reason: reason, days: 0 })
         .then(() => message.guild.members.unban(member));
-      message.channel.send(
-        BoltyMod.BoltyKickEmbed(message)
-          .setAuthor(
-            `${member.user.tag} was softbanned`,
-            `https://cdn.discordapp.com/emojis/801791545060884510.png?v=1`
-          )
-          .addField(`Softbanned By:`, `\`${message.author.tag}\``)
-          .addField(`Reason:`, `\`${reason}\``)
-          .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
-      );
+      message.channel.send({
+        embeds: [
+          BoltyMod.BoltyKickEmbed(message)
+            .setAuthor(
+              `${member.user.tag} was softbanned`,
+              `https://cdn.discordapp.com/emojis/801791545060884510.png?v=1`
+            )
+            .addField(`Softbanned By:`, `\`${message.author.tag}\``)
+            .addField(`Reason:`, `\`${reason}\``)
+            .setThumbnail(member.user.displayAvatarURL({ dynamic: true })),
+        ],
+      });
     } else {
-      message.channel.send(
-        BoltyMod.BoltyEmbed(client).setDescription(
-          `${BoltyMod.BoltyEmotes.wrong_error} I cannot softban that user.`
-        )
-      );
+      message.channel.send({
+        embeds: [
+          BoltyMod.BoltyEmbed(client).setDescription(
+            `${BoltyMod.BoltyEmotes.wrong_error} I cannot softban that user.`
+          ),
+        ],
+      });
     }
   }
 };

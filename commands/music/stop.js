@@ -9,11 +9,13 @@ const BoltyMusic = require("../../classes/BoltyMusic");
  */
 
 module.exports.run = async (client, message, args) => {
-  message.channel.send(
-    BoltyMusic.normalBoltyEmbed(message, client)
-      .setTitle(`Stopped!`)
-      .setDescription(`Stopped playing the song.`)
-  );
+  message.channel.send({
+    embeds: [
+      BoltyMusic.normalBoltyEmbed(message, client)
+        .setTitle(`Stopped!`)
+        .setDescription(`Stopped playing the song.`),
+    ],
+  });
   return client.distube.stop(message);
 };
 
@@ -23,5 +25,5 @@ module.exports.help = {
   aliases: ["s"],
   usage: "",
   category: "Music",
-  cooldown: 500,
+  cooldown: 5,
 };

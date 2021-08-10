@@ -12,11 +12,13 @@ module.exports.run = async (client, message, args) => {
   let musicArgs = args.join(" ");
 
   if (!musicArgs) {
-    message.channel.send(
-      BoltyMusic.musicBoltyEmbed(client, message)
-        .setAuthor(`Error`, `${BoltyMusic.BoltyUrls.error}`)
-        .setDescription(`No song was provided.`)
-    );
+    message.channel.send({
+      embeds: [
+        BoltyMusic.musicBoltyEmbed(client, message)
+          .setAuthor(`Error`, `${BoltyMusic.BoltyUrls.error}`)
+          .setDescription(`No song was provided.`),
+      ],
+    });
   }
 
   return client.distube.play(message, musicArgs);
@@ -28,5 +30,5 @@ module.exports.help = {
   aliases: ["p"],
   usage: "[song name here]",
   category: "Music",
-  cooldown: 500,
+  cooldown: 5,
 };

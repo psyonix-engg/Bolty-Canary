@@ -13,37 +13,72 @@ module.exports.run = async (client, message, args) => {
     message.mentions.channels.first() ||
     message.guild.channels.cache.get(args[0]);
   if (!channel) {
-    message.channel.send(
-      BoltyFun.BoltyFunEmbed(client)
-        .setAuthor(
-          `Error`,
-          `https://cdn.discordapp.com/emojis/856125687567613973.png?v=1`
-        )
-        .setDescription(`You did not provide a channel to post the poll in.`)
-    );
+    message.channel.send({
+      embeds: [
+        BoltyFun.BoltyFunEmbed(client)
+          .setAuthor(
+            `Error`,
+            `https://cdn.discordapp.com/emojis/856125687567613973.png?v=1`
+          )
+          .setDescription(
+            `There was an error trying to run this command, Please make sure you mention a channel/gave the ID of a channel and you gave something to vote on.\nUsage: \`${client.config.prefix}vote [#Channel | ID of a channel] [Something to vote on]\``
+          ),
+        // .setDescription(`You did not provide a channel to post the poll in.`),
+      ],
+    });
   }
 
-  let voteText = args.join(1);
+  try {
+    let voteText = args.slice(1).join(" ");
 
-  if (!voteText) {
-    BoltyFun.BoltyFunEmbed(client)
-      .setAuthor(
-        `Error`,
-        `https://cdn.discordapp.com/emojis/856125687567613973.png?v=1`
-      )
-      .setDescription(`You did not provide something to vote on.`);
+    if (!voteText) {
+      message.channel.send({
+        embeds: [
+          BoltyFun.BoltyFunEmbed(client)
+            .setAuthor(
+              `Error`,
+              `https://cdn.discordapp.com/emojis/856125687567613973.png?v=1`
+            )
+            .setDescription(
+              `There was an error trying to run this command, Please make sure you mention a channel/gave the ID of a channel and you gave something to vote on.\nUsage: \`${client.config.prefix}vote [#Channel | ID of a channel] [Something to vote on]\``
+            ),
+          //.setDescription(`You did not provide something to vote on.`),
+        ],
+      });
+    }
+
+    if (voteText) {
+      message.channel
+        .send({
+          embeds: [
+            BoltyFun.BoltyFunEmbed(client)
+              .setAuthor(`Vote!`, message.guild.iconURL({ dynamic: true }))
+              .setTitle(`Vote!`)
+              .setDescription(
+                `**A Vote has begim! Come and vote!**\n\n${voteText}`
+              ),
+          ],
+        })
+        .then((m) => {
+          m.react("855888059978743819");
+          m.react("🤷‍♂️");
+          m.react("855399096315019294");
+        });
+    }
+  } catch (e) {
+    message.channel.send({
+      embeds: [
+        BoltyFun.BoltyFunEmbed(client)
+          .setAuthor(
+            `Error`,
+            `https://cdn.discordapp.com/emojis/856125687567613973.png?v=1`
+          )
+          .setDescription(
+            `There was an error trying to run this command, Please make sure you mention a channel/gave the ID of a channel and you gave something to vote on.\nUsage: \`${client.config.prefix}vote [#Channel | ID of a channel] [Something to vote on]\``
+          ),
+      ],
+    });
   }
-
-  let voteEmbed = BoltyFun.BoltyFunEmbed(client)
-    .setFooter(
-      `Poll by ${message.author.tag}`,
-      message.author.displayAvatarURL({ dynamic: true })
-    )
-    .setAuthor(`Vote!`, message.guild.iconURL({ dynamic: true }))
-    .setTitle(`Vote!`)
-    .setDescription(`**A vote has begun! Come and vote!**\n\n${voteText}`);
-
-  channel.send(voteEmbed);
 };
 
 module.exports.help = {
